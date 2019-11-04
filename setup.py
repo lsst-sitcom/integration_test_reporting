@@ -19,7 +19,7 @@ with open('requirements/install.txt') as installFile:
 
 test_requirements = None
 with open('requirements/test.txt') as testFile:
-    test_requirements = [x.strip() for x in testFile]
+    test_requirements = [x.strip() for x in testFile if not x.startswith('-')]
 
 setup(
     version=f"{version}",

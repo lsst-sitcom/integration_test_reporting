@@ -1,6 +1,4 @@
-##########################
-integration_test_reporting
-##########################
+# integration_test_reporting
 
 Reporting for integration testing
 
