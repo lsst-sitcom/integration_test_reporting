@@ -27,14 +27,9 @@ async def run(opts):
                                    csc_index=csc.index,
                                    topic_name="logevent_summaryState")
 
-        query += f" WHERE summaryState={summary_state}"
         query += " " + efd.get_time_clause(last=True)
 
         ss_df = await client.query(query)
-        try:
-            ss_df = utils.convert_timestamps(ss_df, ["private_sndStamp"])
-        except KeyError:
-            pass
 
         query = efd.get_base_query(columns=["private_sndStamp",
                                             "substate"],
@@ -45,29 +40,28 @@ async def run(opts):
         query += efd.get_time_clause(last=True, limit=2)
 
         ods_df = await client.query(query)
-        try:
-            ods_df = utils.convert_timestamps(ods_df, ["private_sndStamp"])
-        except KeyError:
-            pass
 
         print("---------------------------------------------------------")
         print(f"CSC: {csc.full_name}")
         try:
-            print(f"Time of Summary State: {ss_df.private_sndStamp[0].strftime(time_format)}")
-        except AttributeError:
-            print(f"summaryState event not present for {csc.full_name}")
+            ss_df = utils.convert_timestamps(ss_df, ["private_sndStamp"])
+            if ss_df.summaryState[0] != summary_state:
+                print("CSC not in OFFLINE State")
+            else:
+                print("CSC in OFFLINE State")
+                print(f"Time of Summary State: {ss_df.private_sndStamp[0].strftime(time_format)}")
+        except (AttributeError, KeyError):
+            print(f"summaryState event not present")
         try:
+            ods_df = utils.convert_timestamps(ods_df, ["private_sndStamp"])
             delta = utils.time_delta(ss_df.private_sndStamp.values[0],
                                      ods_df.private_sndStamp.values[0])
             if math.fabs(delta) > time_window:
                 print(f"Large delay in offlineDetailedState publish: {delta:.1f} seconds")
-        except AttributeError:
-            pass
-        try:
             print(f"First Offline Detailed State: {ods_df.substate.values[1]}")
             print(f"Second Offline Detailed State: {ods_df.substate.values[0]}")
-        except AttributeError:
-            print(f"offlineDetailedState event not present for {csc.full_name}")
+        except (AttributeError, KeyError):
+            print(f"offlineDetailedState event not present")
 
 
 def main():

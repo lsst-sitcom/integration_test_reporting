@@ -22,23 +22,21 @@ async def run(opts):
                                    csc_name=csc.name,
                                    csc_index=csc.index,
                                    topic_name="logevent_summaryState")
-        # Handle indexed components from base query
-        if "WHERE" not in query:
-            query += " WHERE"
-        else:
-            query += " AND"
-        query += f" summaryState={summary_state}"
-        query += " " + efd.get_time_clause(last=True)
 
+        query += " " + efd.get_time_clause(last=True)
         ss_df = await client.query(query)
-        ss_df = utils.convert_timestamps(ss_df, ["private_sndStamp"])
 
         print("-----------------------------------------------------------")
         print(f"CSC: {csc.full_name}")
         try:
-            print(f"Time of Summary State: {ss_df.private_sndStamp[0].strftime(time_format)}")
-        except AttributeError:
-            print(f"summaryState event not present for {csc.full_name}")
+            ss_df = utils.convert_timestamps(ss_df, ["private_sndStamp"])
+            if ss_df.summaryState[0] != summary_state:
+                print("CSC not in ENABLED State")
+            else:
+                print("CSC in ENABLED State")
+                print(f"Time of Summary State: {ss_df.private_sndStamp[0].strftime(time_format)}")
+        except (AttributeError, KeyError):
+            print(f"summaryState event not present")
 
 
 def main():

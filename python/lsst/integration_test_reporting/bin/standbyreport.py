@@ -25,16 +25,9 @@ async def run(opts):
                                    csc_index=csc.index,
                                    topic_name="logevent_summaryState")
 
-        # Handle indexed components from base query
-        if "WHERE" not in query:
-            query += " WHERE"
-        else:
-            query += " AND"
-        query += f" summaryState={summary_state}"
         query += " " + efd.get_time_clause(last=True)
 
         ss_df = await client.query(query)
-        ss_df = utils.convert_timestamps(ss_df, ["private_sndStamp"])
 
         query = efd.get_base_query(columns=["private_sndStamp",
                                             "recommendedSettingsLabels",
@@ -46,19 +39,20 @@ async def run(opts):
         query += " " + efd.get_time_clause(last=True)
 
         sv_df = await client.query(query)
-        try:
-            sv_df = utils.convert_timestamps(sv_df, ["private_sndStamp"])
-        except KeyError:
-            # CSC not publishing settingsVersion topic
-            pass
 
         print("-------------------------------------------------------------")
         print(f"CSC: {csc.full_name}")
         try:
-            print(f"Time of Summary State: {ss_df.private_sndStamp[0].strftime(time_format)}")
-        except AttributeError:
-            print(f"summaryState event not present for {csc.full_name}")
+            ss_df = utils.convert_timestamps(ss_df, ["private_sndStamp"])
+            if ss_df.summaryState[0] != summary_state:
+                print("CSC not in STANDBY State")
+            else:
+                print("CSC in STANDBY State")
+                print(f"Time of Summary State: {ss_df.private_sndStamp[0].strftime(time_format)}")
+        except (AttributeError, KeyError):
+            print(f"summaryState event not present")
         try:
+            sv_df = utils.convert_timestamps(sv_df, ["private_sndStamp"])
             if sv_df.size:
                 delta = utils.time_delta(ss_df.private_sndStamp.values[0],
                                          sv_df.private_sndStamp.values[0])
@@ -69,9 +63,9 @@ async def run(opts):
                 print(f"Recommended Settings Labels: {rsl}")
                 print(f"Recommended Settings Version: {rsv}")
             else:
-                print(f"settingVersions event not present for {csc.full_name}")
-        except AttributeError:
-            print(f"settingVersions event not present for {csc.full_name}")
+                print(f"settingVersions event not present")
+        except (AttributeError, KeyError):
+            print(f"settingVersions event not present")
 
 
 def main():
