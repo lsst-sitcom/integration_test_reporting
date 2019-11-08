@@ -2,6 +2,8 @@ import os
 
 __all__ = ["CSC"]
 
+INDEX_DELIM = ':'
+
 
 class CSC:
     def __init__(self, name, index):
@@ -12,13 +14,13 @@ class CSC:
     def full_name(self):
         _csc_name = f"{self.name}"
         if self.index:
-            _csc_name += f":{self.index}"
+            _csc_name += f"{INDEX_DELIM}{self.index}"
         return _csc_name
 
     @classmethod
     def from_entry(cls, csc_str):
-        if '=' in csc_str:
-            parts = csc_str.split('=')
+        if INDEX_DELIM in csc_str:
+            parts = csc_str.split(INDEX_DELIM)
             return CSC(parts[0], int(parts[1]))
         else:
             return CSC(csc_str, 0)
