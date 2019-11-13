@@ -40,6 +40,16 @@ async def run(opts):
         ss_df = await client.query(query)
         ss_df = utils.convert_timestamps(ss_df, ["private_sndStamp"])
 
+        query = efd.get_base_query(columns=["private_sndStamp"],
+                                   csc_name=csc.name,
+                                   csc_index=csc.index,
+                                   topic_name="command_disable")
+
+        query += efd.get_time_clause(last=True)
+
+        dc_df = await client.query(query)
+        dc_df = utils.convert_timestamps(dc_df, ["private_sndStamp"])
+
         print("--------------------------------------")
         print(f"CSC: {csc.full_name}")
 
@@ -50,9 +60,9 @@ async def run(opts):
         else:
             print("Shutdown Order Correct!")
             shutdown_time = utils.time_delta(ss_df.private_sndStamp.values[0],
-                                             ss_df.private_sndStamp.values[-1])
-            print(f"Total Shutdown Time: {shutdown_time:.2f} s")
-            if shutdown_time / np.timedelta64(1, 'ns') > shutdown_wait_time:
+                                             dc_df.private_sndStamp.values[0])
+            print(f"Total Shutdown Time: {shutdown_time:.4f} s")
+            if shutdown_time > shutdown_wait_time:
                 print("Timestamps:")
                 for timestamp in ss_df.private_sndStamp.values:
                     print(f"\t{timestamp}")
@@ -61,7 +71,7 @@ async def run(opts):
 def main():
     parser = utils.create_parser()
 
-    parser.add_argument('--full-shutdown', dest='full_shutdown', action='store_false',
+    parser.add_argument('--full-shutdown', dest='full_shutdown', action='store_true',
                         help='Perform a full shutdown to OFFLINE, otherwise to STANDBY.')
 
     args = parser.parse_args()
