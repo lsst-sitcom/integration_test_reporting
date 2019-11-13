@@ -51,21 +51,22 @@ async def run(opts):
                 print(f"Time of Summary State: {ss_df.private_sndStamp[0].strftime(time_format)}")
         except (AttributeError, KeyError):
             print(f"summaryState event not present")
-        try:
-            sv_df = utils.convert_timestamps(sv_df, ["private_sndStamp"])
-            if sv_df.size:
-                delta = utils.time_delta(ss_df.private_sndStamp.values[0],
-                                         sv_df.private_sndStamp.values[0])
-                if math.fabs(delta) > time_window:
-                    print(f"Large delay in settingVersions publish: {delta:.1f} seconds")
-                rsl = sv_df.recommendedSettingsLabels.values[0]
-                rsv = sv_df.recommendedSettingsVersion.values[0]
-                print(f"Recommended Settings Labels: {rsl}")
-                print(f"Recommended Settings Version: {rsv}")
-            else:
+        if csc.name not in utils.NON_CONFIG_CSCS:
+            try:
+                sv_df = utils.convert_timestamps(sv_df, ["private_sndStamp"])
+                if sv_df.size:
+                    delta = utils.time_delta(ss_df.private_sndStamp.values[0],
+                                             sv_df.private_sndStamp.values[0])
+                    if math.fabs(delta) > time_window:
+                        print(f"Large delay in settingVersions publish: {delta:.1f} seconds")
+                    rsl = sv_df.recommendedSettingsLabels.values[0]
+                    rsv = sv_df.recommendedSettingsVersion.values[0]
+                    print(f"Recommended Settings Labels: {rsl}")
+                    print(f"Recommended Settings Version: {rsv}")
+                else:
+                    print(f"settingVersions event not present")
+            except (AttributeError, KeyError):
                 print(f"settingVersions event not present")
-        except (AttributeError, KeyError):
-            print(f"settingVersions event not present")
 
 
 def main():
