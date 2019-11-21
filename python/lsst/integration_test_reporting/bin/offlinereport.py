@@ -12,7 +12,7 @@ async def run(opts):
     cscs = utils.CSC.get_from_file(opts.sut)
 
     summary_state = 4  # OFFLINE
-    time_window = 10.0  # seconds
+    time_window = 120.0  # seconds
     time_format = '%Y-%m-%dT%H:%M:%S.%f'
 
     print("#########################################################")
