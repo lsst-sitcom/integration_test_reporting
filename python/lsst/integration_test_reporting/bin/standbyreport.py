@@ -40,6 +40,15 @@ async def run(opts):
 
         sv_df = await client.query(query)
 
+        query = efd.get_base_query(columns=["*"],
+                                   csc_name=csc.name,
+                                   csc_index=csc.index,
+                                   topic_name="logevent_softwareVersions")
+
+        query += " " + efd.get_time_clause(last=True, limit=2)
+
+        sov_df = await client.query(query)
+
         print("-------------------------------------------------------------")
         print(f"CSC: {csc.full_name}")
         try:
@@ -51,6 +60,11 @@ async def run(opts):
                 print(f"Time of Summary State: {ss_df.private_sndStamp[0].strftime(time_format)}")
         except (AttributeError, KeyError):
             print(f"summaryState event not present")
+        try:
+            sov_df = utils.convert_timestamps(sov_df, ["private_sndStamp"])
+            print("softwareVersions present")
+        except (AttributeError, KeyError):
+            print("softwareVersions event not present")
         if csc.name not in utils.NON_CONFIG_CSCS:
             try:
                 sv_df = utils.convert_timestamps(sv_df, ["private_sndStamp"])
