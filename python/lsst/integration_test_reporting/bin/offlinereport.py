@@ -43,6 +43,15 @@ async def run(opts):
 
         ods_df = await client.query(query)
 
+        query = efd.get_base_query(columns=["*"],
+                                   csc_name=csc.name,
+                                   csc_index=csc.index,
+                                   topic_name="logevent_softwareVersions")
+
+        query += efd.get_time_clause(last=True, limit=2)
+
+        sv_df = await client.query(query)
+
         print("---------------------------------------------------------")
         print(f"CSC: {csc.full_name}")
         try:
@@ -70,6 +79,11 @@ async def run(opts):
                 print(f"Incorrect Offline Detailed States Order: {ss_order}")
         except (AttributeError, KeyError):
             print(f"offlineDetailedState event not present")
+        try:
+            sv_df = utils.convert_timestamps(sv_df, ["private_sndStamp"])
+            print("softwareVersions present")
+        except (AttributeError, KeyError):
+            print("softwareVersions event not present")
 
 
 def main():
