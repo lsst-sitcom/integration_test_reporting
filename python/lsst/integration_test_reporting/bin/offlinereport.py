@@ -1,6 +1,8 @@
 import asyncio
 import math
 
+import numpy as np
+
 from .. import efd
 from .. import utils
 
@@ -58,8 +60,14 @@ async def run(opts):
                                      ods_df.private_sndStamp.values[0])
             if math.fabs(delta) > time_window:
                 print(f"Large delay in offlineDetailedState publish: {delta:.1f} seconds")
-            print(f"First Offline Detailed State: {ods_df.substate.values[1]}")
-            print(f"Second Offline Detailed State: {ods_df.substate.values[0]}")
+
+            substate_order = np.array([1, 2])
+            ss_order = ods_df.substate.values
+            does_transition = np.all(ss_order == substate_order)
+            if does_transition:
+                print("Offline Detailed States Order Correct!")
+            else:
+                print(f"Incorrect Offline Detailed States Order: {ss_order}")
         except (AttributeError, KeyError):
             print(f"offlineDetailedState event not present")
 
