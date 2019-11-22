@@ -45,8 +45,8 @@ async def run(opts):
                                    csc_index=csc.index,
                                    topic_name="command_disable")
 
-        query += efd.get_time_clause(last=True)
-
+        query += " " + efd.get_time_clause(last=True)
+        # print(query)
         dc_df = await client.query(query)
         dc_df = utils.convert_timestamps(dc_df, ["private_sndStamp"])
 
@@ -72,7 +72,7 @@ def main():
     parser = utils.create_parser()
 
     parser.add_argument('--full-shutdown', dest='full_shutdown', action='store_true',
-                        help='Perform a full shutdown to OFFLINE, otherwise to STANDBY.')
+                        help='Check a full shutdown to OFFLINE, otherwise to STANDBY.')
 
     args = parser.parse_args()
 
