@@ -33,6 +33,8 @@ class CSC:
         with open(csc_file, 'r') as ifile:
             for line in ifile:
                 v = line.strip()
+                if v.startswith('#'):
+                    continue
                 cscs.append(CSC.from_entry(v))
 
         return cscs
