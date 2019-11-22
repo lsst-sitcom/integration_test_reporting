@@ -15,6 +15,8 @@ async def run(opts):
     # Full shutdown goes to OFFLINE state. Normal is to STANDBY state.
     if opts.full_shutdown:
         ss_limit = 4
+        if opts.handle_restart:
+            ss_limit += 1
         shutdown_start = 0
     else:
         ss_limit = 3
@@ -54,6 +56,8 @@ async def run(opts):
         print(f"CSC: {csc.full_name}")
 
         ss_shutdown = ss_df.summaryState.values
+        if opts.handle_restart:
+            ss_shutdown = ss_shutdown[1:]
         does_shutdown = np.all(ss_shutdown == ss_shutdown_order[shutdown_start:])
         if not does_shutdown:
             print(f"Incorrect Shutdown Order: {ss_shutdown}")
@@ -73,6 +77,8 @@ def main():
 
     parser.add_argument('--full-shutdown', dest='full_shutdown', action='store_true',
                         help='Check a full shutdown to OFFLINE, otherwise to STANDBY.')
+    parser.add_argument('--handle-restart', dest='handle_restart', action='store_true',
+                        help='Shift window due to component automatic restart. Only effects full shutdown')
 
     args = parser.parse_args()
 
