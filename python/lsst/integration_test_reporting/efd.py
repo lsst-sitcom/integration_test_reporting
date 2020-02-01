@@ -70,10 +70,3 @@ def get_time_clause(time_column="time", last=False, limit=1, date_range=None):
         query += QUERY_TIME_RANGE.format(time_column=time_column, start=first, end=last)
 
     return query
-
-
-def filter_measurements(measurements, csc_name, topic_name):
-    csc_filtered = [measurement.split('.')[-1] for measurement in measurements['name'].values
-                    if csc_name in measurement]
-    topic_filtered = [topic for topic in csc_filtered if topic_name in topic]
-    return topic_filtered
