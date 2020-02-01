@@ -10,14 +10,15 @@
 import asyncio
 import math
 
+from lsst_efd_client import EfdClient
+
 from .. import utils
-from .. import efd
 
 __all__ = ('main')
 
 
 async def run(opts):
-    client = efd.get_client(opts.location)
+    efd = EfdClient(opts.location)
     cscs = utils.CSC.get_from_file(opts.sut)
 
     summary_state = 5  # STANDBY
@@ -28,35 +29,19 @@ async def run(opts):
     print("#                      STANDBY Report                       #")
     print("#############################################################")
     for csc in cscs:
-        query = efd.get_base_query(columns=["private_sndStamp",
-                                            "summaryState"],
-                                   csc_name=csc.name,
-                                   csc_index=csc.index,
-                                   topic_name="logevent_summaryState")
+        ss_df = await efd.select_top_n(utils.efd_name(csc.name, "logevent_summaryState"),
+                                       ["private_sndStamp", "summaryState"],
+                                       1, csc.index)
 
-        query += " " + efd.get_time_clause(last=True)
+        sv_df = await efd.select_top_n(utils.efd_name(csc.name, "logevent_settingVersions"),
+                                       ["private_sndStamp",
+                                        "recommendedSettingsLabels",
+                                        "recommendedSettingsVersion"],
+                                       1, csc.index)
 
-        ss_df = await client.query(query)
-
-        query = efd.get_base_query(columns=["private_sndStamp",
-                                            "recommendedSettingsLabels",
-                                            "recommendedSettingsVersion"],
-                                   csc_name=csc.name,
-                                   csc_index=csc.index,
-                                   topic_name="logevent_settingVersions")
-
-        query += " " + efd.get_time_clause(last=True)
-
-        sv_df = await client.query(query)
-
-        query = efd.get_base_query(columns=["*"],
-                                   csc_name=csc.name,
-                                   csc_index=csc.index,
-                                   topic_name="logevent_softwareVersions")
-
-        query += " " + efd.get_time_clause(last=True, limit=2)
-
-        sov_df = await client.query(query)
+        sov_df = await efd.select_top_n(utils.efd_name(csc.name, "logevent_softwareVersions"),
+                                        "*",
+                                        2, csc.index)
 
         print("-------------------------------------------------------------")
         print(f"CSC: {csc.full_name}")
