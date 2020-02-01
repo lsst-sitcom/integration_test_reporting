@@ -7,8 +7,17 @@
 # Use of this source code is governed by a 3-clause BSD-style
 # license that can be found in the LICENSE file.
 
-from .constants import *
-from .csc_cls import *
-from .df import *
-from .helpers import *
-from .parser import *
+__all__ = ['efd_name']
+
+
+def efd_name(csc, topic):
+    """Get a fully qualified EFD topic name.
+
+    Parameters
+    ----------
+    csc : str
+        The name of the CSC.
+    topic : TYPE
+        The name of the topic.
+    """
+    return f"lsst.sal.{csc}.{topic}"
