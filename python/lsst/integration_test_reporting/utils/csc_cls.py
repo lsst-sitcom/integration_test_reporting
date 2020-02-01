@@ -32,7 +32,7 @@ class CSC:
             parts = csc_str.split(INDEX_DELIM)
             return CSC(parts[0], int(parts[1]))
         else:
-            return CSC(csc_str, 0)
+            return CSC(csc_str, None)
 
     @classmethod
     def get_from_file(cls, csc_file):

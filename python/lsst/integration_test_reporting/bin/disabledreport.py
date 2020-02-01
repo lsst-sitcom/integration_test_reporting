@@ -10,14 +10,15 @@
 import asyncio
 import math
 
+from lsst_efd_client import EfdClient
+
 from .. import utils
-from .. import efd
 
 __all__ = ('main')
 
 
 async def run(opts):
-    client = efd.get_client(opts.location)
+    efd = EfdClient(opts.location)
     cscs = utils.CSC.get_from_file(opts.sut)
 
     summary_state = 1  # DISABLE
@@ -28,57 +29,33 @@ async def run(opts):
     print("#                     DISABLED Report                     #")
     print("###########################################################")
     for csc in cscs:
-        query = efd.get_base_query(columns=["private_sndStamp",
-                                            "summaryState"],
-                                   csc_name=csc.name,
-                                   csc_index=csc.index,
-                                   topic_name="logevent_summaryState")
-        query += " " + efd.get_time_clause(last=True)
+        ss_df = await efd.select_top_n(utils.efd_name(csc.name, "logevent_summaryState"),
+                                       ["private_sndStamp", "summaryState"],
+                                       1, csc.index)
 
-        ss_df = await client.query(query)
+        sa_df = await efd.select_top_n(utils.efd_name(csc.name, "logevent_settingsApplied"),
+                                       "*",
+                                       1, csc.index)
 
-        query = efd.get_base_query(columns=["*"],
-                                   csc_name=csc.name,
-                                   csc_index=csc.index,
-                                   topic_name="logevent_settingsApplied")
-
-        query += " " + efd.get_time_clause(last=True)
-
-        sa_df = await client.query(query)
-
-        query = efd.get_base_query(columns=["private_sndStamp"],
-                                   csc_name=csc.name,
-                                   csc_index=csc.index,
-                                   topic_name="command_start")
-
-        query += " " + efd.get_time_clause(last=True)
-
-        sc_df = await client.query(query)
+        sc_df = await efd.select_top_n(utils.efd_name(csc.name, "command_start"),
+                                       "private_sndStamp",
+                                       1, csc.index)
         sc_df = utils.convert_timestamps(sc_df, ["private_sndStamp"])
 
-        measurements_df = await client.query("SHOW MEASUREMENTS")
-        csc_sa_list = efd.filter_measurements(measurements_df, csc.name, "settingsApplied")
+        measurements = await efd.get_topics()
+        csc_sa_list = utils.filter_measurements(measurements, csc.name, "settingsApplied")
         csc_sa = [x for x in csc_sa_list if x != "logevent_settingsApplied"]
 
         csc_sa_dict = {}
         for event in csc_sa:
-            query = efd.get_base_query(columns=["*"],
-                                       csc_name=csc.name,
-                                       csc_index=csc.index,
-                                       topic_name=event)
+            csc_sa_dict[event] = await efd.select_top_n(utils.efd_name(csc.name, event),
+                                                        "*",
+                                                        1, csc.index)
 
-            query += "  " + efd.get_time_clause(last=True)
-            csc_sa_dict[event] = await client.query(query)
-
-        query = efd.get_base_query(columns=["private_sndStamp",
-                                            "appliedSettingsMatchStartIsTrue"],
-                                   csc_name=csc.name,
-                                   csc_index=csc.index,
-                                   topic_name="logevent_appliedSettingsMatchStart")
-
-        query += "  " + efd.get_time_clause(last=True)
-
-        asms_df = await client.query(query)
+        asms_df = await efd.select_top_n(utils.efd_name(csc.name, "logevent_appliedSettingsMatchStart"),
+                                         ["private_sndStamp",
+                                          "appliedSettingsMatchStartIsTrue"],
+                                         1, csc.index)
 
         print("-----------------------------------------------------------")
         print(f"CSC: {csc.full_name}")

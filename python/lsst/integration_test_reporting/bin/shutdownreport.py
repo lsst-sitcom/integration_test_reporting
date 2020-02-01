@@ -9,16 +9,16 @@
 
 import asyncio
 
+from lsst_efd_client import EfdClient
 import numpy as np
 
 from .. import utils
-from .. import efd
 
 __all__ = ('main')
 
 
 async def run(opts):
-    client = efd.get_client(opts.location)
+    efd = EfdClient(opts.location)
     cscs = utils.CSC.get_from_file(opts.sut)
 
     # Full shutdown goes to OFFLINE state. Normal is to STANDBY state.
@@ -38,27 +38,16 @@ async def run(opts):
     print("#          Shutdown Report           #")
     print("######################################")
     for csc in cscs:
-        query = efd.get_base_query(columns=["private_sndStamp",
-                                            "summaryState"],
-                                   csc_name=csc.name,
-                                   csc_index=csc.index,
-                                   topic_name="logevent_summaryState")
-        # Handle indexed components from base query
-        if csc.index != 0 and "WHERE" not in query:
-            query += " WHERE"
-        query += " " + efd.get_time_clause(last=True, limit=ss_limit)
-        # print(query)
-        ss_df = await client.query(query)
+        ss_df = await efd.select_top_n(utils.efd_name(csc.name, "logevent_summaryState"),
+                                       ["private_sndStamp", "summaryState"],
+                                       ss_limit, csc.index)
+
         ss_df = utils.convert_timestamps(ss_df, ["private_sndStamp"])
 
-        query = efd.get_base_query(columns=["private_sndStamp"],
-                                   csc_name=csc.name,
-                                   csc_index=csc.index,
-                                   topic_name="command_disable")
+        dc_df = await efd.select_top_n(utils.efd_name(csc.name, "command_disable"),
+                                       ["private_sndStamp"],
+                                       ss_limit, csc.index)
 
-        query += " " + efd.get_time_clause(last=True)
-        # print(query)
-        dc_df = await client.query(query)
         dc_df = utils.convert_timestamps(dc_df, ["private_sndStamp"])
 
         print("--------------------------------------")

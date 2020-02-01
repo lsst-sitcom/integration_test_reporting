@@ -35,6 +35,6 @@ def create_parser():
     parser.add_argument('sut', type=str,
                         help='File containing list of systems (CSCs) under test.')
 
-    parser.set_defaults(location='tucson')
+    parser.set_defaults(location='tucson_efd')
 
     return parser
