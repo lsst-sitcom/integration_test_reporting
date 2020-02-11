@@ -26,6 +26,9 @@ class CSC:
             _csc_name += f"{INDEX_DELIM}{self.index}"
         return _csc_name
 
+    def efd_topic(self, topic_name):
+        return f'lsst.sal.{self.name}.{topic_name}'
+
     @classmethod
     def from_entry(cls, csc_str):
         if INDEX_DELIM in csc_str:
