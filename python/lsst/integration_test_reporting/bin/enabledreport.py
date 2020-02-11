@@ -27,7 +27,7 @@ async def run(opts):
     print("#                     ENABLED Report                      #")
     print("###########################################################")
     for csc in cscs:
-        ss_df = await efd.select_top_n(utils.efd_name(csc.name, "logevent_summaryState"),
+        ss_df = await efd.select_top_n(csc.efd_topic("logevent_summaryState"),
                                        ["private_sndStamp", "summaryState"],
                                        1, csc.index)
 

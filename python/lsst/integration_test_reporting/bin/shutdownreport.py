@@ -38,13 +38,13 @@ async def run(opts):
     print("#          Shutdown Report           #")
     print("######################################")
     for csc in cscs:
-        ss_df = await efd.select_top_n(utils.efd_name(csc.name, "logevent_summaryState"),
+        ss_df = await efd.select_top_n(csc.efd_topic("logevent_summaryState"),
                                        ["private_sndStamp", "summaryState"],
                                        ss_limit, csc.index)
 
         ss_df = utils.convert_timestamps(ss_df, ["private_sndStamp"])
 
-        dc_df = await efd.select_top_n(utils.efd_name(csc.name, "command_disable"),
+        dc_df = await efd.select_top_n(csc.efd_topic("command_disable"),
                                        ["private_sndStamp"],
                                        ss_limit, csc.index)
 

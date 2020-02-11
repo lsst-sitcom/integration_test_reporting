@@ -32,15 +32,15 @@ async def run(opts):
     for csc in cscs:
         if "Camera" not in csc.name or "Generic" in csc.name:
             continue
-        ss_df = await efd.select_top_n(utils.efd_name(csc.name, "logevent_summaryState"),
+        ss_df = await efd.select_top_n(csc.efd_topic("logevent_summaryState"),
                                        ["private_sndStamp", "summaryState"],
                                        1, csc.index)
 
-        ods_df = await efd.select_top_n(utils.efd_name(csc.name, "logevent_offlineDetailedState"),
+        ods_df = await efd.select_top_n(csc.efd_topic("logevent_offlineDetailedState"),
                                         ["private_sndStamp", "substate"],
                                         2, csc.index)
 
-        sv_df = await efd.select_top_n(utils.efd_name(csc.name, "logevent_softwareVersions"),
+        sv_df = await efd.select_top_n(csc.efd_topic("logevent_softwareVersions"),
                                        "*",
                                        2, csc.index)
 
