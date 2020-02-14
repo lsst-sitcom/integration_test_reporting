@@ -19,7 +19,7 @@ __all__ = ('main')
 
 async def run(opts):
     efd = EfdClient(opts.location)
-    cscs = utils.CSC.get_from_file(opts.sut)
+    cscs = utils.CSC.get_from_source(opts.sut)
 
     summary_state = 1  # DISABLE
     time_window = 10.0  # seconds

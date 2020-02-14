@@ -19,7 +19,7 @@ __all__ = ('main')
 
 async def run(opts):
     efd = EfdClient(opts.location)
-    cscs = utils.CSC.get_from_file(opts.sut)
+    cscs = utils.CSC.get_from_source(opts.sut)
 
     # Full shutdown goes to OFFLINE state. Normal is to STANDBY state.
     if opts.full_shutdown:

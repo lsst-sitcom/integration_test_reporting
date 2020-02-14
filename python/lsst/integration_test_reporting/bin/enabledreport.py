@@ -18,7 +18,7 @@ __all__ = ('main')
 
 async def run(opts):
     efd = EfdClient(opts.location)
-    cscs = utils.CSC.get_from_file(opts.sut)
+    cscs = utils.CSC.get_from_source(opts.sut)
 
     summary_state = 2  # ENABLE
     time_format = '%Y-%m-%dT%H:%M:%S.%f'
