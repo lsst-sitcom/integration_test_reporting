@@ -18,7 +18,7 @@ __all__ = ('main')
 
 async def run(opts):
     efd = EfdClient(opts.location)
-    cscs = utils.CSC.get_from_file(opts.sut)
+    cscs = utils.CSC.get_from_source(opts.sut)
 
     summary_state = 2  # ENABLE
     time_format = '%Y-%m-%dT%H:%M:%S.%f'
@@ -27,7 +27,7 @@ async def run(opts):
     print("#                     ENABLED Report                      #")
     print("###########################################################")
     for csc in cscs:
-        ss_df = await efd.select_top_n(utils.efd_name(csc.name, "logevent_summaryState"),
+        ss_df = await efd.select_top_n(csc.efd_topic("logevent_summaryState"),
                                        ["private_sndStamp", "summaryState"],
                                        1, csc.index)
 

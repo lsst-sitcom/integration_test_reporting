@@ -33,7 +33,8 @@ def create_parser():
                           help='Supply a file containing EFD authentication information.')
 
     parser.add_argument('sut', type=str,
-                        help='File containing list of systems (CSCs) under test.')
+                        help='File containing list of systems (CSCs) under test or a comma '
+                             'delimited string of CSC names.')
 
     parser.set_defaults(location='tucson_efd')
 

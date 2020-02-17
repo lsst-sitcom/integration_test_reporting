@@ -19,12 +19,18 @@ class CSC:
         self.name = name
         self.index = index
 
+    def __eq__(self, other):
+        return other.name == self.name and other.index == self.index
+
     @property
     def full_name(self):
         _csc_name = f"{self.name}"
         if self.index:
             _csc_name += f"{INDEX_DELIM}{self.index}"
         return _csc_name
+
+    def efd_topic(self, topic_name):
+        return f'lsst.sal.{self.name}.{topic_name}'
 
     @classmethod
     def from_entry(cls, csc_str):
@@ -47,3 +53,18 @@ class CSC:
                 cscs.append(CSC.from_entry(v))
 
         return cscs
+
+    @classmethod
+    def get_from_list(cls, csc_list):
+        csc_entries = csc_list.split(',')
+        cscs = []
+        for csc_entry in csc_entries:
+            cscs.append(CSC.from_entry(csc_entry))
+        return cscs
+
+    @classmethod
+    def get_from_source(cls, source):
+        if ',' in source:
+            return cls.get_from_list(source)
+        else:
+            return cls.get_from_file(source)

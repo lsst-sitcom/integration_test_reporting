@@ -19,7 +19,7 @@ __all__ = ('main')
 
 async def run(opts):
     efd = EfdClient(opts.location)
-    cscs = utils.CSC.get_from_file(opts.sut)
+    cscs = utils.CSC.get_from_source(opts.sut)
 
     summary_state = 5  # STANDBY
     time_window = 10.0  # seconds
@@ -29,17 +29,17 @@ async def run(opts):
     print("#                      STANDBY Report                       #")
     print("#############################################################")
     for csc in cscs:
-        ss_df = await efd.select_top_n(utils.efd_name(csc.name, "logevent_summaryState"),
+        ss_df = await efd.select_top_n(csc.efd_topic("logevent_summaryState"),
                                        ["private_sndStamp", "summaryState"],
                                        1, csc.index)
 
-        sv_df = await efd.select_top_n(utils.efd_name(csc.name, "logevent_settingVersions"),
+        sv_df = await efd.select_top_n(csc.efd_topic("logevent_settingVersions"),
                                        ["private_sndStamp",
                                         "recommendedSettingsLabels",
                                         "recommendedSettingsVersion"],
                                        1, csc.index)
 
-        sov_df = await efd.select_top_n(utils.efd_name(csc.name, "logevent_softwareVersions"),
+        sov_df = await efd.select_top_n(csc.efd_topic("logevent_softwareVersions"),
                                         "*",
                                         2, csc.index)
 

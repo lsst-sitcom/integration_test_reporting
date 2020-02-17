@@ -19,7 +19,7 @@ __all__ = ('main')
 
 async def run(opts):
     efd = EfdClient(opts.location)
-    cscs = utils.CSC.get_from_file(opts.sut)
+    cscs = utils.CSC.get_from_source(opts.sut)
 
     summary_state = 1  # DISABLE
     time_window = 10.0  # seconds
@@ -29,30 +29,30 @@ async def run(opts):
     print("#                     DISABLED Report                     #")
     print("###########################################################")
     for csc in cscs:
-        ss_df = await efd.select_top_n(utils.efd_name(csc.name, "logevent_summaryState"),
+        ss_df = await efd.select_top_n(csc.efd_topic("logevent_summaryState"),
                                        ["private_sndStamp", "summaryState"],
                                        1, csc.index)
 
-        sa_df = await efd.select_top_n(utils.efd_name(csc.name, "logevent_settingsApplied"),
+        sa_df = await efd.select_top_n(csc.efd_topic("logevent_settingsApplied"),
                                        "*",
                                        1, csc.index)
 
-        sc_df = await efd.select_top_n(utils.efd_name(csc.name, "command_start"),
+        sc_df = await efd.select_top_n(csc.efd_topic("command_start"),
                                        "private_sndStamp",
                                        1, csc.index)
         sc_df = utils.convert_timestamps(sc_df, ["private_sndStamp"])
 
         measurements = await efd.get_topics()
-        csc_sa_list = utils.filter_measurements(measurements, csc.name, "settingsApplied")
+        csc_sa_list = utils.filter_measurements(measurements, csc.efd_topic("settingsApplied"))
         csc_sa = [x for x in csc_sa_list if x != "logevent_settingsApplied"]
 
         csc_sa_dict = {}
         for event in csc_sa:
-            csc_sa_dict[event] = await efd.select_top_n(utils.efd_name(csc.name, event),
+            csc_sa_dict[event] = await efd.select_top_n(csc.efd_topic(event),
                                                         "*",
                                                         1, csc.index)
 
-        asms_df = await efd.select_top_n(utils.efd_name(csc.name, "logevent_appliedSettingsMatchStart"),
+        asms_df = await efd.select_top_n(csc.efd_topic("logevent_appliedSettingsMatchStart"),
                                          ["private_sndStamp",
                                           "appliedSettingsMatchStartIsTrue"],
                                          1, csc.index)
