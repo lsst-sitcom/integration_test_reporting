@@ -2,7 +2,7 @@
 import os.path
 from setuptools import setup
 
-version = "0.1.0"
+version = "0.2.0"
 with open("./python/lsst/integration_test_reporting/version.py", "w") as f:
     print(f"""
 __all__ = ("__version__", )
