@@ -10,7 +10,9 @@
 __all__ = ["NON_CONFIG_CSCS"]
 
 NON_CONFIG_CSCS = [
+    "ATHeaderService",
     "ATMCS",
+    "CCHeaderService",
     "LinearStage",
     "ScriptQueue"
 ]
