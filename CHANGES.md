@@ -1,5 +1,9 @@
 # Change History
 
+## 0.2.1 (2020-03-16)
+
+* Update non-configurable CSC list
+
 ## 0.2.0 (2020-02-17)
 
 * Use new _lsst-efd-client_ package
