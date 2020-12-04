@@ -25,14 +25,9 @@ class TestArgumentParser():
         args = self.parser.parse_args(['sut.dat'])
         assert args.location == 'tucson_efd'
         assert args.sut == 'sut.dat'
-        assert args.efd_auth_file is None
 
     def test_location(self):
         args = self.parser.parse_args(['-l', 'ncsa_efd', 'sut.dat'])
         assert args.location == 'ncsa_efd'
         args = self.parser.parse_args(['--location', 'summit_efd', 'sut.dat'])
         assert args.location == 'summit_efd'
-
-    def test_efd_auth(self):
-        args = self.parser.parse_args(['-f', '~/.efd_auth', 'sut.dat'])
-        assert args.efd_auth_file == '~/.efd_auth'
