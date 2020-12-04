@@ -53,7 +53,7 @@ async def run(opts):
                 print("CSC in STANDBY State")
                 print(f"Time of Summary State: {ss_df.private_sndStamp[0].strftime(time_format)}")
         except (AttributeError, KeyError):
-            print(f"summaryState event not present")
+            print("summaryState event not present")
         try:
             sov_df = utils.convert_timestamps(sov_df, ["private_sndStamp"])
             print("softwareVersions present")
@@ -75,9 +75,9 @@ async def run(opts):
                         print(f"Recommended Settings Labels: {rsl}")
                     print(f"Recommended Settings Version: {rsv}")
                 else:
-                    print(f"settingVersions event not present")
+                    print("settingVersions event not present")
             except (AttributeError, KeyError):
-                print(f"settingVersions event not present")
+                print("settingVersions event not present")
 
 
 def main():

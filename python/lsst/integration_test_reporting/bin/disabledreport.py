@@ -67,7 +67,7 @@ async def run(opts):
                 print("CSC in DISABLED State")
                 print(f"Time of Summary State: {ss_df.private_sndStamp[0].strftime(time_format)}")
         except (AttributeError, KeyError):
-            print(f"summaryState event not present")
+            print("summaryState event not present")
         if csc.name not in utils.NON_CONFIG_CSCS:
             try:
                 sa_df = utils.convert_timestamps(sa_df, ["private_sndStamp"])
@@ -79,9 +79,9 @@ async def run(opts):
                         print(f"summaryState Time:    {ss_df.private_sndStamp.values[0]}")
                         print(f"settingsApplied Time: {sa_df.private_sndStamp.values[0]}")
                 else:
-                    print(f"settingsApplied event not present")
+                    print("settingsApplied event not present")
             except (AttributeError, KeyError):
-                print(f"settingsApplied event not present")
+                print("settingsApplied event not present")
             print(f"Number of CSC specific settingsApplied events: {len(csc_sa)}")
             for key, value in csc_sa_dict.items():
                 try:
@@ -108,9 +108,9 @@ async def run(opts):
                     asmsit = asms_df.appliedSettingsMatchStartIsTrue.values[0]
                     print(f"Applied Settings Match Start Is True: {asmsit}")
                 else:
-                    print(f"appliedSettingsMatchStart event not present")
+                    print("appliedSettingsMatchStart event not present")
             except (AttributeError, KeyError):
-                print(f"appliedSettingsMatchStart event not present")
+                print("appliedSettingsMatchStart event not present")
 
 
 def main():

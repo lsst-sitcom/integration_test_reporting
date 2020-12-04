@@ -41,7 +41,7 @@ async def run(opts):
                 print("CSC in ENABLED State")
                 print(f"Time of Summary State: {ss_df.private_sndStamp[0].strftime(time_format)}")
         except (AttributeError, KeyError):
-            print(f"summaryState event not present")
+            print("summaryState event not present")
 
 
 def main():

@@ -52,7 +52,7 @@ async def run(opts):
                 print("CSC in OFFLINE State")
                 print(f"Time of Summary State: {ss_df.private_sndStamp[0].strftime(time_format)}")
         except (AttributeError, KeyError):
-            print(f"summaryState event not present")
+            print("summaryState event not present")
         try:
             ods_df = utils.convert_timestamps(ods_df, ["private_sndStamp"])
             delta = utils.time_delta(ss_df.private_sndStamp.values[0],
@@ -68,7 +68,7 @@ async def run(opts):
             else:
                 print(f"Incorrect Offline Detailed States Order: {ss_order}")
         except (AttributeError, KeyError):
-            print(f"offlineDetailedState event not present")
+            print("offlineDetailedState event not present")
         try:
             sv_df = utils.convert_timestamps(sv_df, ["private_sndStamp"])
             print("softwareVersions present")
