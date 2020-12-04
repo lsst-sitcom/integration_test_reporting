@@ -69,7 +69,10 @@ async def run(opts):
                         print(f"Large delay in settingVersions publish: {delta:.1f} seconds")
                     rsl = sv_df.recommendedSettingsLabels.values[0]
                     rsv = sv_df.recommendedSettingsVersion.values[0]
-                    print(f"Recommended Settings Labels: {rsl}")
+                    if rsl == "":
+                        print("Rcommended Settings Labels is empty")
+                    else:
+                        print(f"Recommended Settings Labels: {rsl}")
                     print(f"Recommended Settings Version: {rsv}")
                 else:
                     print(f"settingVersions event not present")

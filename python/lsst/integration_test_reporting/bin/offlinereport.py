@@ -20,7 +20,7 @@ __all__ = ('main')
 
 async def run(opts):
     efd = EfdClient(opts.location)
-    cscs = utils.CSC.get_from_source(opts.sut)
+    cscs = utils.CSC.get_from_list(",".join(utils.OFFLINE_CSCS))
 
     summary_state = 4  # OFFLINE
     time_window = 120.0  # seconds
@@ -30,8 +30,6 @@ async def run(opts):
     print("#                    OFFLINE Report                     #")
     print("#########################################################")
     for csc in cscs:
-        if "Camera" not in csc.name or "Generic" in csc.name:
-            continue
         ss_df = await efd.select_top_n(csc.efd_topic("logevent_summaryState"),
                                        ["private_sndStamp", "summaryState"],
                                        1, csc.index)

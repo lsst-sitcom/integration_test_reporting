@@ -46,7 +46,7 @@ async def run(opts):
 
         dc_df = await efd.select_top_n(csc.efd_topic("command_disable"),
                                        ["private_sndStamp"],
-                                       ss_limit, csc.index)
+                                       1, csc.index)
 
         dc_df = utils.convert_timestamps(dc_df, ["private_sndStamp"])
 
