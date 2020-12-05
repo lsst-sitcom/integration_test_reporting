@@ -43,7 +43,8 @@ async def run(opts):
         sc_df = utils.convert_timestamps(sc_df, ["private_sndStamp"])
 
         measurements = await efd.get_topics()
-        csc_sa_list = utils.filter_measurements(measurements, csc.efd_topic("settingsApplied"))
+        csc_sa_list = utils.filter_measurements(measurements, csc.name,
+                                                csc.efd_topic("settingsApplied"))
         csc_sa = [x for x in csc_sa_list if x != "logevent_settingsApplied"]
 
         csc_sa_dict = {}
