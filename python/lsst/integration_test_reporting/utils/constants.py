@@ -28,7 +28,7 @@ NON_CONFIG_CSCS = [
 OFFLINE_CSCS = [
     "ATCamera",
     "CCCamera",
-    "MTHexpod:1",
-    "MTHexpod:2",
+    "MTHexapod:1",
+    "MTHexapod:2",
     "MTRotator"
 ]
