@@ -7,7 +7,26 @@
 # Use of this source code is governed by a 3-clause BSD-style
 # license that can be found in the LICENSE file.
 
-__all__ = ['efd_name', 'filter_measurements']
+__all__ = ['check_correct_value', 'efd_name', 'filter_measurements']
+
+
+def check_correct_value(value, truth, message):
+    """Check value against a truth value.
+
+    Parameters
+    ----------
+    value : any
+        The value to check.
+    truth : any
+        The reference value.
+    message : str
+        The base message to provide.
+    """
+    if truth is not None:
+        if truth == value:
+            print(f"{message} OK")
+        else:
+            print(f"{message} incorrect: {value}")
 
 
 def efd_name(csc, topic):
@@ -17,7 +36,7 @@ def efd_name(csc, topic):
     ----------
     csc : str
         The name of the CSC.
-    topic : TYPE
+    topic : str
         The name of the topic.
     """
     return f"lsst.sal.{csc}.{topic}"

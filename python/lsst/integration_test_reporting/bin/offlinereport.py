@@ -40,7 +40,7 @@ async def run(opts):
 
         sv_df = await efd.select_top_n(csc.efd_topic("logevent_softwareVersions"),
                                        "*",
-                                       2, csc.index)
+                                       1, csc.index)
 
         print("---------------------------------------------------------")
         print(f"CSC: {csc.full_name}")
@@ -72,6 +72,8 @@ async def run(opts):
         try:
             sv_df = utils.convert_timestamps(sv_df, ["private_sndStamp"])
             print("softwareVersions present")
+            utils.check_correct_value(opts.xml, sv_df["xmlVersion"][0], "XML version")
+            utils.check_correct_value(opts.sal, sv_df["salVersion"][0], "SAL version")
         except (AttributeError, KeyError):
             print("softwareVersions event not present")
 
