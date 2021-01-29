@@ -41,7 +41,7 @@ async def run(opts):
 
         sov_df = await efd.select_top_n(csc.efd_topic("logevent_softwareVersions"),
                                         "*",
-                                        2, csc.index)
+                                        1, csc.index)
 
         print("-------------------------------------------------------------")
         print(f"CSC: {csc.full_name}")
@@ -57,6 +57,9 @@ async def run(opts):
         try:
             sov_df = utils.convert_timestamps(sov_df, ["private_sndStamp"])
             print("softwareVersions present")
+            utils.check_correct_value(opts.xml, sov_df["xmlVersion"][0], "XML version")
+            utils.check_correct_value(opts.sal, sov_df["salVersion"][0], "SAL version")
+            utils.check_not_empty(sov_df["cscVersion"][0], "CSC version")
         except (AttributeError, KeyError):
             print("softwareVersions event not present")
         if csc.name not in utils.NON_CONFIG_CSCS:
@@ -70,7 +73,7 @@ async def run(opts):
                     rsl = sv_df.recommendedSettingsLabels.values[0]
                     rsv = sv_df.recommendedSettingsVersion.values[0]
                     if rsl == "":
-                        print("Rcommended Settings Labels is empty")
+                        print("Recommended Settings Labels is empty")
                     else:
                         print(f"Recommended Settings Labels: {rsl}")
                     print(f"Recommended Settings Version: {rsv}")

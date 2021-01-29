@@ -7,18 +7,18 @@
 # Use of this source code is governed by a 3-clause BSD-style
 # license that can be found in the LICENSE file.
 
-__all__ = ['check_correct_value', 'efd_name', 'filter_measurements']
+__all__ = ['check_correct_value', 'check_not_empty', 'efd_name', 'filter_measurements']
 
 
-def check_correct_value(value, truth, message):
+def check_correct_value(truth, value, message):
     """Check value against a truth value.
 
     Parameters
     ----------
-    value : any
-        The value to check.
     truth : any
         The reference value.
+    value : any
+        The value to check.
     message : str
         The base message to provide.
     """
@@ -28,6 +28,20 @@ def check_correct_value(value, truth, message):
         else:
             print(f"{message} incorrect: {value}")
 
+def check_not_empty(value, message):
+    """Check value is not empty.
+
+    Parameters
+    ----------
+    value : any
+        The value to check.
+    message : str
+        The base message to provide.
+    """
+    if value.strip() == "":
+        print(f"{message} cannot be empty!")
+    else:
+        print(f"{message} OK: {value}")
 
 def efd_name(csc, topic):
     """Get a fully qualified EFD topic name.
