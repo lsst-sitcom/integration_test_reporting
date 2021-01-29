@@ -28,6 +28,7 @@ def check_correct_value(truth, value, message):
         else:
             print(f"{message} incorrect: {value}")
 
+
 def check_not_empty(value, message):
     """Check value is not empty.
 
@@ -42,6 +43,7 @@ def check_not_empty(value, message):
         print(f"{message} cannot be empty!")
     else:
         print(f"{message} OK: {value}")
+
 
 def efd_name(csc, topic):
     """Get a fully qualified EFD topic name.
