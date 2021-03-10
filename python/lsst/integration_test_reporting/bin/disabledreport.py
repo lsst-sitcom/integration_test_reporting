@@ -28,10 +28,19 @@ async def run(opts):
     print("###########################################################")
     print("#                     DISABLED Report                     #")
     print("###########################################################")
+
+    if opts.index_auto:
+        top_n = 3
+    else:
+        top_n = 1
+
     for csc in cscs:
         ss_df = await efd.select_top_n(csc.efd_topic("logevent_summaryState"),
                                        ["private_sndStamp", "summaryState"],
-                                       1, csc.index)
+                                       top_n, csc.index)
+
+        if opts.index_auto:
+            ss_df = ss_df.iloc[[1]]
 
         sa_df = await efd.select_top_n(csc.efd_topic("logevent_settingsApplied"),
                                        "*",
