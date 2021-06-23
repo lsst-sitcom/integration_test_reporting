@@ -55,8 +55,8 @@ async def run(opts):
             print("summaryState event not present")
         try:
             ods_df = utils.convert_timestamps(ods_df, ["private_sndStamp"])
-            delta = utils.time_delta(ss_df.private_sndStamp.values[0],
-                                     ods_df.private_sndStamp.values[0])
+            delta = utils.time_delta(ods_df.private_sndStamp.values[0],
+                                     ss_df.private_sndStamp.values[0])
             if math.fabs(delta) > time_window:
                 print(f"Large delay in offlineDetailedState publish: {delta:.1f} seconds")
 
