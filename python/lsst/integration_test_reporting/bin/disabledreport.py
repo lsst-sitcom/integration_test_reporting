@@ -46,10 +46,13 @@ async def run(opts):
                                        "*",
                                        1, csc.index)
 
-        sc_df = await efd.select_top_n(csc.efd_topic("command_start"),
-                                       "private_sndStamp",
-                                       1, csc.index)
-        sc_df = utils.convert_timestamps(sc_df, ["private_sndStamp"])
+        if not opts.index_auto:
+            sc_df = await efd.select_top_n(csc.efd_topic("command_start"),
+                                           "private_sndStamp",
+                                           1, csc.index)
+            sc_df = utils.convert_timestamps(sc_df, ["private_sndStamp"])
+        else:
+            sc_df = None
 
         measurements = await efd.get_topics()
         csc_sa_list = utils.filter_measurements(measurements, csc.name,
