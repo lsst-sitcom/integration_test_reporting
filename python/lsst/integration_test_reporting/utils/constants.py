@@ -19,7 +19,6 @@ NON_CONFIG_CSCS = [
     "CCArchiver",
     "DSM",
     "LinearStage",
-    "MTHexapod",
     "MTPtg",
     "MTRotator",
     "ScriptQueue"
