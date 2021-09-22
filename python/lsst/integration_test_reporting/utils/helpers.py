@@ -41,6 +41,8 @@ def check_not_empty(value, message):
     """
     if value.strip() == "":
         print(f"{message} cannot be empty!")
+    elif value.strip() == "?":
+        print(f"{message} cannot be {value.strip()}")
     else:
         print(f"{message} OK: {value}")
 
