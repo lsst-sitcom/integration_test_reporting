@@ -33,10 +33,19 @@ async def run(opts):
         ss_df = await efd.select_top_n(csc.efd_topic("logevent_summaryState"),
                                        ["private_sndStamp", "summaryState"],
                                        1, csc.index)
-
-        ods_df = await efd.select_top_n(csc.efd_topic("logevent_offlineDetailedState"),
-                                        ["private_sndStamp", "substate"],
-                                        2, csc.index)
+        is_camera = False
+        ods_topic = None
+        if "Camera" in csc.name:
+            ods_topic = "offlineDetailedState"
+            ods_df = await efd.select_top_n(csc.efd_topic(f"logevent_{ods_topic}"),
+                                            ["private_sndStamp", "substate"],
+                                            2, csc.index)
+            is_camera = True
+        else:
+            ods_topic = "commandableByDDS"
+            ods_df = await efd.select_top_n(csc.efd_topic(f"logevent_{ods_topic}"),
+                                            ["private_sndStamp", "state"],
+                                            1, csc.index)
 
         sv_df = await efd.select_top_n(csc.efd_topic("logevent_softwareVersions"),
                                        "*",
@@ -58,17 +67,23 @@ async def run(opts):
             delta = utils.time_delta(ods_df.private_sndStamp.values[0],
                                      ss_df.private_sndStamp.values[0])
             if math.fabs(delta) > time_window:
-                print(f"Large delay in offlineDetailedState publish: {delta:.1f} seconds")
+                print(f"Large delay in {ods_topic} publish: {delta:.1f} seconds")
 
-            substate_order = np.array([1, 2])
-            ss_order = ods_df.substate.values
-            does_transition = np.all(ss_order == substate_order)
-            if does_transition:
-                print("Offline Detailed States Order Correct!")
+            if is_camera:
+                substate_order = np.array([1, 2])
+                ss_order = ods_df.substate.values
+                does_transition = np.all(ss_order == substate_order)
+                if does_transition:
+                    print("Offline Detailed States Order Correct!")
+                else:
+                    print(f"Incorrect Offline Detailed States Order: {ss_order}")
             else:
-                print(f"Incorrect Offline Detailed States Order: {ss_order}")
+                if bool(ods_df.state.values[0]):
+                    print("CSC Ready for DDS Commands!")
+                else:
+                    print("CSC NOT Ready for DDS Commands!")
         except (AttributeError, KeyError):
-            print("offlineDetailedState event not present")
+            print(f"{ods_topic} event not present")
         try:
             sv_df = utils.convert_timestamps(sv_df, ["private_sndStamp"])
             print("softwareVersions present")
