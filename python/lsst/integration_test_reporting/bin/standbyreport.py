@@ -65,7 +65,9 @@ async def run(opts):
             print("summaryState event not present")
         try:
             sov_df = utils.convert_timestamps(sov_df, ["private_sndStamp"])
-            print("softwareVersions present")
+            delta = utils.time_delta(utils.get_now(), sov_df.private_sndStamp.values[0])
+            print(f"softwareVersions present")
+            print(f"Publication time gap: {delta:.1f} seconds")
             utils.check_correct_value(opts.xml, sov_df["xmlVersion"][0], "XML version")
             utils.check_correct_value(opts.sal, sov_df["salVersion"][0], "SAL version")
             utils.check_not_empty(sov_df["cscVersion"][0], "CSC version")
