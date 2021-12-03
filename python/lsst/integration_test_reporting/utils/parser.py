@@ -27,10 +27,11 @@ def create_parser():
     parser.add_argument('-l', '--location', dest='location',
                         help='Set the location of the test for EFD mapping.')
 
-    efd_auth = parser.add_mutually_exclusive_group()
+    parser.add_argument("--xml", dest="xml", help="The XML version to check")
+    parser.add_argument("--sal", dest="sal", help="The SAL version to check")
 
-    efd_auth.add_argument('-f', '--efd-auth-file', dest='efd_auth_file',
-                          help='Supply a file containing EFD authentication information.')
+    parser.add_argument("--index-auto", action="store_true",
+                        help="Set a backlook index for auto-enabled CSCs.")
 
     parser.add_argument('sut', type=str,
                         help='File containing list of systems (CSCs) under test or a comma '

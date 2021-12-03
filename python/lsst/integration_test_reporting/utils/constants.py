@@ -7,12 +7,24 @@
 # Use of this source code is governed by a 3-clause BSD-style
 # license that can be found in the LICENSE file.
 
-__all__ = ["NON_CONFIG_CSCS"]
+__all__ = ["NON_CONFIG_CSCS", "OFFLINE_CSCS"]
 
 NON_CONFIG_CSCS = [
+    "ATArchiver",
     "ATHeaderService",
     "ATMCS",
+    "ATPneumatics",
+    "ATPtg",
     "CCHeaderService",
+    "CCArchiver",
+    "DSM",
     "LinearStage",
+    "MTPtg",
+    "MTRotator",
     "ScriptQueue"
+]
+
+OFFLINE_CSCS = [
+    "ATCamera",
+    "CCCamera",
 ]

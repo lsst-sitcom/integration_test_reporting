@@ -28,10 +28,19 @@ async def run(opts):
     print("#############################################################")
     print("#                      STANDBY Report                       #")
     print("#############################################################")
+
+    if opts.index_auto:
+        top_n = 3
+    else:
+        top_n = 1
+
     for csc in cscs:
         ss_df = await efd.select_top_n(csc.efd_topic("logevent_summaryState"),
                                        ["private_sndStamp", "summaryState"],
-                                       1, csc.index)
+                                       top_n, csc.index)
+
+        if opts.index_auto:
+            ss_df = ss_df.iloc[[2]]
 
         sv_df = await efd.select_top_n(csc.efd_topic("logevent_settingVersions"),
                                        ["private_sndStamp",
@@ -41,7 +50,7 @@ async def run(opts):
 
         sov_df = await efd.select_top_n(csc.efd_topic("logevent_softwareVersions"),
                                         "*",
-                                        2, csc.index)
+                                        1, csc.index)
 
         print("-------------------------------------------------------------")
         print(f"CSC: {csc.full_name}")
@@ -53,10 +62,15 @@ async def run(opts):
                 print("CSC in STANDBY State")
                 print(f"Time of Summary State: {ss_df.private_sndStamp[0].strftime(time_format)}")
         except (AttributeError, KeyError):
-            print(f"summaryState event not present")
+            print("summaryState event not present")
         try:
             sov_df = utils.convert_timestamps(sov_df, ["private_sndStamp"])
+            delta = utils.time_delta(utils.get_now(), sov_df.private_sndStamp.values[0])
             print("softwareVersions present")
+            print(f"Publication time gap: {delta:.1f} seconds")
+            utils.check_correct_value(opts.xml, sov_df["xmlVersion"][0], "XML version")
+            utils.check_correct_value(opts.sal, sov_df["salVersion"][0], "SAL version")
+            utils.check_not_empty(sov_df["cscVersion"][0], "CSC version")
         except (AttributeError, KeyError):
             print("softwareVersions event not present")
         if csc.name not in utils.NON_CONFIG_CSCS:
@@ -69,12 +83,15 @@ async def run(opts):
                         print(f"Large delay in settingVersions publish: {delta:.1f} seconds")
                     rsl = sv_df.recommendedSettingsLabels.values[0]
                     rsv = sv_df.recommendedSettingsVersion.values[0]
-                    print(f"Recommended Settings Labels: {rsl}")
+                    if rsl == "":
+                        print("Recommended Settings Labels is empty")
+                    else:
+                        print(f"Recommended Settings Labels: {rsl}")
                     print(f"Recommended Settings Version: {rsv}")
                 else:
-                    print(f"settingVersions event not present")
+                    print("settingVersions event not present")
             except (AttributeError, KeyError):
-                print(f"settingVersions event not present")
+                print("settingVersions event not present")
 
 
 def main():
