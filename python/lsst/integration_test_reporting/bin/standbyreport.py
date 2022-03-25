@@ -42,10 +42,10 @@ async def run(opts):
         if opts.index_auto:
             ss_df = ss_df.iloc[[2]]
 
-        sv_df = await efd.select_top_n(csc.efd_topic("logevent_settingVersions"),
+        ca_df = await efd.select_top_n(csc.efd_topic("logevent_configurationsAvailable"),
                                        ["private_sndStamp",
-                                        "recommendedSettingsLabels",
-                                        "recommendedSettingsVersion"],
+                                        "overrides",
+                                        "version"],
                                        1, csc.index)
 
         sov_df = await efd.select_top_n(csc.efd_topic("logevent_softwareVersions"),
@@ -75,23 +75,23 @@ async def run(opts):
             print("softwareVersions event not present")
         if csc.name not in utils.NON_CONFIG_CSCS:
             try:
-                sv_df = utils.convert_timestamps(sv_df, ["private_sndStamp"])
-                if sv_df.size:
+                ca_df = utils.convert_timestamps(ca_df, ["private_sndStamp"])
+                if ca_df.size:
                     delta = utils.time_delta(ss_df.private_sndStamp.values[0],
-                                             sv_df.private_sndStamp.values[0])
+                                             ca_df.private_sndStamp.values[0])
                     if math.fabs(delta) > time_window:
-                        print(f"Large delay in settingVersions publish: {delta:.1f} seconds")
-                    rsl = sv_df.recommendedSettingsLabels.values[0]
-                    rsv = sv_df.recommendedSettingsVersion.values[0]
+                        print(f"Large delay in configurationsAvailable publish: {delta:.1f} seconds")
+                    rsl = ca_df.overrides.values[0]
+                    rsv = ca_df.version.values[0]
                     if rsl == "":
                         print("Recommended Settings Labels is empty")
                     else:
                         print(f"Recommended Settings Labels: {rsl}")
                     print(f"Recommended Settings Version: {rsv}")
                 else:
-                    print("settingVersions event not present")
+                    print("configurationsAvailable event not present")
             except (AttributeError, KeyError):
-                print("settingVersions event not present")
+                print("configurationsAvailable event not present")
 
 
 def main():

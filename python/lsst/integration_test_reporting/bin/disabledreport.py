@@ -42,7 +42,7 @@ async def run(opts):
         if opts.index_auto:
             ss_df = ss_df.iloc[[1]]
 
-        sa_df = await efd.select_top_n(csc.efd_topic("logevent_settingsApplied"),
+        ca_df = await efd.select_top_n(csc.efd_topic("logevent_configurationApplied"),
                                        "*",
                                        1, csc.index)
 
@@ -55,20 +55,20 @@ async def run(opts):
             sc_df = None
 
         measurements = await efd.get_topics()
-        csc_sa_list = utils.filter_measurements(measurements, csc.name,
-                                                csc.efd_topic("settingsApplied"))
-        csc_sa = [x for x in csc_sa_list if x != "logevent_settingsApplied"]
+        csc_ca_list = utils.filter_measurements(measurements, csc.name,
+                                                csc.efd_topic("configurationApplied"))
+        csc_ca = [x for x in csc_ca_list if x != "logevent_configurationApplied"]
 
-        csc_sa_dict = {}
-        for event in csc_sa:
-            csc_sa_dict[event] = await efd.select_top_n(csc.efd_topic(event),
+        csc_ca_dict = {}
+        for event in csc_ca:
+            csc_ca_dict[event] = await efd.select_top_n(csc.efd_topic(event),
                                                         "*",
                                                         1, csc.index)
 
-        asms_df = await efd.select_top_n(csc.efd_topic("logevent_appliedSettingsMatchStart"),
-                                         ["private_sndStamp",
-                                          "appliedSettingsMatchStartIsTrue"],
-                                         1, csc.index)
+        # asms_df = await efd.select_top_n(csc.efd_topic("logevent_appliedSettingsMatchStart"),
+        #                                  ["private_sndStamp",
+        #                                   "appliedSettingsMatchStartIsTrue"],
+        #                                  1, csc.index)
 
         print("-----------------------------------------------------------")
         print(f"CSC: {csc.full_name}")
@@ -83,20 +83,20 @@ async def run(opts):
             print("summaryState event not present")
         if csc.name not in utils.NON_CONFIG_CSCS:
             try:
-                sa_df = utils.convert_timestamps(sa_df, ["private_sndStamp"])
-                if sa_df.size:
+                ca_df = utils.convert_timestamps(ca_df, ["private_sndStamp"])
+                if ca_df.size:
                     delta = utils.time_delta(ss_df.private_sndStamp.values[0],
-                                             sa_df.private_sndStamp.values[0])
+                                             ca_df.private_sndStamp.values[0])
                     if math.fabs(delta) > time_window:
-                        print(f"Large delay in settingsApplied publish: {delta:.1f} seconds")
+                        print(f"Large delay in configurationApplied publish: {delta:.1f} seconds")
                         print(f"summaryState Time:    {ss_df.private_sndStamp.values[0]}")
-                        print(f"settingsApplied Time: {sa_df.private_sndStamp.values[0]}")
+                        print(f"configurationApplied Time: {ca_df.private_sndStamp.values[0]}")
                 else:
-                    print("settingsApplied event not present")
+                    print("configurationApplied event not present")
             except (AttributeError, KeyError):
-                print("settingsApplied event not present")
-            print(f"Number of CSC specific settingsApplied events: {len(csc_sa)}")
-            for key, value in csc_sa_dict.items():
+                print("configurationApplied event not present")
+            print(f"Number of CSC specific configurationApplied events: {len(csc_ca)}")
+            for key, value in csc_ca_dict.items():
                 try:
                     if value.shape[0] == 1:
                         print(f"{key} present")
@@ -109,21 +109,21 @@ async def run(opts):
                         print(f"{key} Time:\t{value.private_sndStamp.values[0]}")
                 except (AttributeError, KeyError):
                     print(f"{key} not present")
-            try:
-                asms_df = utils.convert_timestamps(asms_df, ["private_sndStamp"])
-                if asms_df.size:
-                    delta = utils.time_delta(ss_df.private_sndStamp.values[0],
-                                             asms_df.private_sndStamp.values[0])
-                    if math.fabs(delta) > time_window:
-                        print(f"Large delay in appliedSettingsMatchStart publish: {delta:.1f} seconds")
-                        print(f"summaryState Time:              {ss_df.private_sndStamp.values[0]}")
-                        print(f"appliedSettingsMatchStart Time: {asms_df.private_sndStamp.values[0]}")
-                    asmsit = asms_df.appliedSettingsMatchStartIsTrue.values[0]
-                    print(f"Applied Settings Match Start Is True: {asmsit}")
-                else:
-                    print("appliedSettingsMatchStart event not present")
-            except (AttributeError, KeyError):
-                print("appliedSettingsMatchStart event not present")
+            # try:
+            #     asms_df = utils.convert_timestamps(asms_df, ["private_sndStamp"])
+            #     if asms_df.size:
+            #         delta = utils.time_delta(ss_df.private_sndStamp.values[0],
+            #                                  asms_df.private_sndStamp.values[0])
+            #         if math.fabs(delta) > time_window:
+            #             print(f"Large delay in appliedSettingsMatchStart publish: {delta:.1f} seconds")
+            #             print(f"summaryState Time:              {ss_df.private_sndStamp.values[0]}")
+            #             print(f"appliedSettingsMatchStart Time: {asms_df.private_sndStamp.values[0]}")
+            #         asmsit = asms_df.appliedSettingsMatchStartIsTrue.values[0]
+            #         print(f"Applied Settings Match Start Is True: {asmsit}")
+            #     else:
+            #         print("appliedSettingsMatchStart event not present")
+            # except (AttributeError, KeyError):
+            #     print("appliedSettingsMatchStart event not present")
 
 
 def main():
