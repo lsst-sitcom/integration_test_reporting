@@ -40,13 +40,13 @@ async def run(opts):
     for csc in cscs:
         ss_df = await efd.select_top_n(csc.efd_topic("logevent_summaryState"),
                                        ["private_sndStamp", "summaryState"],
-                                       ss_limit, csc.index)
+                                       ss_limit, index=csc.index)
 
         ss_df = utils.convert_timestamps(ss_df, ["private_sndStamp"])
 
         dc_df = await efd.select_top_n(csc.efd_topic("command_disable"),
                                        ["private_sndStamp"],
-                                       1, csc.index)
+                                       1, index=csc.index)
 
         dc_df = utils.convert_timestamps(dc_df, ["private_sndStamp"])
 

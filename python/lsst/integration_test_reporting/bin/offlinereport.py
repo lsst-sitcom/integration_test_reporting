@@ -32,24 +32,24 @@ async def run(opts):
     for csc in cscs:
         ss_df = await efd.select_top_n(csc.efd_topic("logevent_summaryState"),
                                        ["private_sndStamp", "summaryState"],
-                                       1, csc.index)
+                                       1, index=csc.index)
         is_camera = False
         ods_topic = None
         if "Camera" in csc.name:
             ods_topic = "offlineDetailedState"
             ods_df = await efd.select_top_n(csc.efd_topic(f"logevent_{ods_topic}"),
                                             ["private_sndStamp", "substate"],
-                                            2, csc.index)
+                                            2, index=csc.index)
             is_camera = True
         else:
             ods_topic = "commandableByDDS"
             ods_df = await efd.select_top_n(csc.efd_topic(f"logevent_{ods_topic}"),
                                             ["private_sndStamp", "state"],
-                                            1, csc.index)
+                                            1, index=csc.index)
 
         sv_df = await efd.select_top_n(csc.efd_topic("logevent_softwareVersions"),
                                        "*",
-                                       1, csc.index)
+                                       1, index=csc.index)
 
         print("---------------------------------------------------------")
         print(f"CSC: {csc.full_name}")

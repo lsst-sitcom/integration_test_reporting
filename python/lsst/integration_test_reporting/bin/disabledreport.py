@@ -37,19 +37,19 @@ async def run(opts):
     for csc in cscs:
         ss_df = await efd.select_top_n(csc.efd_topic("logevent_summaryState"),
                                        ["private_sndStamp", "summaryState"],
-                                       top_n, csc.index)
+                                       top_n, index=csc.index)
 
         if opts.index_auto:
             ss_df = ss_df.iloc[[1]]
 
         ca_df = await efd.select_top_n(csc.efd_topic("logevent_configurationApplied"),
                                        "*",
-                                       1, csc.index)
+                                       1, index=csc.index)
 
         if not opts.index_auto:
             sc_df = await efd.select_top_n(csc.efd_topic("command_start"),
                                            "private_sndStamp",
-                                           1, csc.index)
+                                           1, index=csc.index)
             sc_df = utils.convert_timestamps(sc_df, ["private_sndStamp"])
         else:
             sc_df = None
