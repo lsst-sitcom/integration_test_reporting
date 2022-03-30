@@ -11,7 +11,7 @@ import os
 
 __all__ = ["CSC"]
 
-INDEX_DELIM = ':'
+INDEX_DELIM = ":"
 
 
 class CSC:
@@ -30,7 +30,7 @@ class CSC:
         return _csc_name
 
     def efd_topic(self, topic_name):
-        return f'lsst.sal.{self.name}.{topic_name}'
+        return f"lsst.sal.{self.name}.{topic_name}"
 
     @classmethod
     def from_entry(cls, csc_str):
@@ -43,12 +43,12 @@ class CSC:
     @classmethod
     def get_from_file(cls, csc_file):
         cscs = []
-        if '~' in csc_file:
+        if "~" in csc_file:
             csc_file = os.path.expanduser(csc_file)
-        with open(csc_file, 'r') as ifile:
+        with open(csc_file, "r") as ifile:
             for line in ifile:
                 v = line.strip()
-                if v.startswith('#'):
+                if v.startswith("#"):
                     continue
                 cscs.append(CSC.from_entry(v))
 
@@ -56,7 +56,7 @@ class CSC:
 
     @classmethod
     def get_from_list(cls, csc_list):
-        csc_entries = csc_list.split(',')
+        csc_entries = csc_list.split(",")
         cscs = []
         for csc_entry in csc_entries:
             cscs.append(CSC.from_entry(csc_entry))
@@ -64,7 +64,7 @@ class CSC:
 
     @classmethod
     def get_from_source(cls, source):
-        if ',' in source:
+        if "," in source:
             return cls.get_from_list(source)
         else:
             return cls.get_from_file(source)

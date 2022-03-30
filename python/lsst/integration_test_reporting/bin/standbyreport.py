@@ -45,7 +45,7 @@ async def run(opts):
         ca_df = await efd.select_top_n(csc.efd_topic("logevent_configurationsAvailable"),
                                        ["private_sndStamp",
                                         "overrides",
-                                        "version"],
+                                        "version", "url"],
                                        1, csc.index)
 
         sov_df = await efd.select_top_n(csc.efd_topic("logevent_softwareVersions"),
@@ -56,6 +56,7 @@ async def run(opts):
         print(f"CSC: {csc.full_name}")
         try:
             ss_df = utils.convert_timestamps(ss_df, ["private_sndStamp"])
+            #print("A:", ss_df)
             if ss_df.summaryState[0] != summary_state:
                 print("CSC not in STANDBY State")
             else:
@@ -71,6 +72,7 @@ async def run(opts):
             utils.check_correct_value(opts.xml, sov_df["xmlVersion"][0], "XML version")
             utils.check_correct_value(opts.sal, sov_df["salVersion"][0], "SAL version")
             utils.check_not_empty(sov_df["cscVersion"][0], "CSC version")
+            utils.check_semver_like(sov_df["cscVersion"][0], "CSC version")
         except (AttributeError, KeyError):
             print("softwareVersions event not present")
         if csc.name not in utils.NON_CONFIG_CSCS:
@@ -81,13 +83,16 @@ async def run(opts):
                                              ca_df.private_sndStamp.values[0])
                     if math.fabs(delta) > time_window:
                         print(f"Large delay in configurationsAvailable publish: {delta:.1f} seconds")
-                    rsl = ca_df.overrides.values[0]
-                    rsv = ca_df.version.values[0]
-                    if rsl == "":
-                        print("Recommended Settings Labels is empty")
+                    print("configurationsAvailable event present")
+                    cao = ca_df.overrides.values[0]
+                    cav = ca_df.version.values[0]
+                    cau = ca_df.url.values[0]
+                    if cao == "":
+                        print("Overrides is empty")
                     else:
-                        print(f"Recommended Settings Labels: {rsl}")
-                    print(f"Recommended Settings Version: {rsv}")
+                        print(f"Overrides: {cao}")
+                    utils.check_semver_like(cav, "Version")
+                    utils.check_not_empty(cau, "URL")
                 else:
                     print("configurationsAvailable event not present")
             except (AttributeError, KeyError):

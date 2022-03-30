@@ -10,18 +10,17 @@
 __all__ = ["NON_CONFIG_CSCS", "OFFLINE_CSCS"]
 
 NON_CONFIG_CSCS = [
-    "ATArchiver",
     "ATHeaderService",
     "ATMCS",
+    "ATOODS",
     "ATPneumatics",
     "ATPtg",
     "CCHeaderService",
-    "CCArchiver",
+    "CCOODS",
     "DSM",
     "LinearStage",
     "MTPtg",
-    "MTRotator",
-    "ScriptQueue"
+    "ScriptQueue",
 ]
 
 OFFLINE_CSCS = [

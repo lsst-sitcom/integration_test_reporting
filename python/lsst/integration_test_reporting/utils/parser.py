@@ -9,7 +9,7 @@
 
 import argparse
 
-__all__ = ['create_parser']
+__all__ = ["create_parser"]
 
 
 def create_parser():
@@ -19,24 +19,36 @@ def create_parser():
     argparse.ArgumentParser
         The application command-line parser.
     """
-    description = ['This is the interface for Integration Test Reporting.']
+    description = ["This is the interface for Integration Test Reporting."]
 
-    parser = argparse.ArgumentParser(description=' '.join(description),
-                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description=" ".join(description),
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
 
-    parser.add_argument('-l', '--location', dest='location',
-                        help='Set the location of the test for EFD mapping.')
+    parser.add_argument(
+        "-l",
+        "--location",
+        dest="location",
+        help="Set the location of the test for EFD mapping.",
+    )
 
     parser.add_argument("--xml", dest="xml", help="The XML version to check")
     parser.add_argument("--sal", dest="sal", help="The SAL version to check")
 
-    parser.add_argument("--index-auto", action="store_true",
-                        help="Set a backlook index for auto-enabled CSCs.")
+    parser.add_argument(
+        "--index-auto",
+        action="store_true",
+        help="Set a backlook index for auto-enabled CSCs.",
+    )
 
-    parser.add_argument('sut', type=str,
-                        help='File containing list of systems (CSCs) under test or a comma '
-                             'delimited string of CSC names.')
+    parser.add_argument(
+        "sut",
+        type=str,
+        help="File containing list of systems (CSCs) under test or a comma "
+        "delimited string of CSC names.",
+    )
 
-    parser.set_defaults(location='tucson_efd')
+    parser.set_defaults(location="tucson_efd")
 
     return parser

@@ -12,7 +12,7 @@ from typing import List
 import numpy as np
 import pandas as pd
 
-__all__ = ('convert_timestamps', 'get_now', 'time_delta')
+__all__ = ("convert_timestamps", "get_now", "time_delta")
 
 
 def convert_timestamps(df: pd.DataFrame, columns: List):
@@ -21,9 +21,13 @@ def convert_timestamps(df: pd.DataFrame, columns: List):
     return df
 
 
-def time_delta(t1: pd.Timestamp, t2: pd.Timestamp):
-    return (t1 - t2) / np.timedelta64(1, 's')
+def time_delta(t1: pd.Timestamp, t2: np.datetime64):
+    if isinstance(t1, np.datetime64):
+        t1 = pd.Timestamp(t2).tz_localize("UTC")
+    x = t1 - pd.Timestamp(t2).tz_localize("UTC")
+    d = x / np.timedelta64(1, "s")
+    return d
 
 
 def get_now() -> pd.Timestamp:
-    return pd.Timestamp.now()
+    return pd.Timestamp.now("utc")

@@ -7,7 +7,26 @@
 # Use of this source code is governed by a 3-clause BSD-style
 # license that can be found in the LICENSE file.
 
-__all__ = ['check_correct_value', 'check_not_empty', 'efd_name', 'filter_measurements']
+import re
+
+__all__ = [
+    "check_correct_value",
+    "check_not_empty",
+    "check_semver_like",
+    "efd_name",
+    "filter_measurements",
+]
+
+
+SEMVER_RE = "".join(
+    [
+        "^v?(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)",
+        "(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)",
+        "(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?",
+        "(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$",
+    ]
+)
+SEMVER = re.compile(SEMVER_RE)
 
 
 def check_correct_value(truth, value, message):
@@ -47,6 +66,23 @@ def check_not_empty(value, message):
         print(f"{message} OK: {value}")
 
 
+def check_semver_like(value, message):
+    """Check value is semantic version like
+
+    Parameters
+    ----------
+    value : str
+        The version to check.
+    message : str
+        The base message to provide.
+    """
+    result = SEMVER.match(value)
+    if result is None:
+        print(f"{message} is not semantic version like: {value} ")
+    else:
+        print(f"{message} OK")
+
+
 def efd_name(csc, topic):
     """Get a fully qualified EFD topic name.
 
@@ -77,7 +113,10 @@ def filter_measurements(measurements, csc_name, topic_name):
     list[str]
         Filtered list of topics.
     """
-    csc_filtered = [measurement.split('.')[-1] for measurement in measurements
-                    if csc_name in measurement]
+    csc_filtered = [
+        measurement.split(".")[-1]
+        for measurement in measurements
+        if csc_name in measurement
+    ]
     topic_filtered = [topic for topic in csc_filtered if topic_name in topic]
     return topic_filtered
