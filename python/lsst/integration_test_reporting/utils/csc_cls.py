@@ -22,6 +22,9 @@ class CSC:
     def __eq__(self, other):
         return other.name == self.name and other.index == self.index
 
+    def __str__(self):
+        return f"name: {self.name}, index: {self.index}"
+
     @property
     def full_name(self):
         _csc_name = f"{self.name}"

@@ -23,7 +23,7 @@ def convert_timestamps(df: pd.DataFrame, columns: List):
 
 def time_delta(t1: pd.Timestamp, t2: np.datetime64):
     if isinstance(t1, np.datetime64):
-        t1 = pd.Timestamp(t2).tz_localize("UTC")
+        t1 = pd.Timestamp(t1).tz_localize("UTC")
     x = t1 - pd.Timestamp(t2).tz_localize("UTC")
     d = x / np.timedelta64(1, "s")
     return d

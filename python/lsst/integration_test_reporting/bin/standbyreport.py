@@ -37,7 +37,7 @@ async def run(opts):
     for csc in cscs:
         ss_df = await efd.select_top_n(csc.efd_topic("logevent_summaryState"),
                                        ["private_sndStamp", "summaryState"],
-                                       top_n, csc.index)
+                                       top_n, index=csc.index)
 
         if opts.index_auto:
             ss_df = ss_df.iloc[[2]]
@@ -46,11 +46,11 @@ async def run(opts):
                                        ["private_sndStamp",
                                         "overrides",
                                         "version", "url"],
-                                       1, csc.index)
+                                       1, index=csc.index)
 
         sov_df = await efd.select_top_n(csc.efd_topic("logevent_softwareVersions"),
                                         "*",
-                                        1, csc.index)
+                                        1, index=csc.index)
 
         print("-------------------------------------------------------------")
         print(f"CSC: {csc.full_name}")
