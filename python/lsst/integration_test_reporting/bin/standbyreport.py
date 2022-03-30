@@ -56,7 +56,6 @@ async def run(opts):
         print(f"CSC: {csc.full_name}")
         try:
             ss_df = utils.convert_timestamps(ss_df, ["private_sndStamp"])
-            #print("A:", ss_df)
             if ss_df.summaryState[0] != summary_state:
                 print("CSC not in STANDBY State")
             else:

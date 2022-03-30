@@ -63,12 +63,7 @@ async def run(opts):
         for event in csc_ca:
             csc_ca_dict[event] = await efd.select_top_n(csc.efd_topic(event),
                                                         "*",
-                                                        1, csc.index)
-
-        # asms_df = await efd.select_top_n(csc.efd_topic("logevent_appliedSettingsMatchStart"),
-        #                                  ["private_sndStamp",
-        #                                   "appliedSettingsMatchStartIsTrue"],
-        #                                  1, csc.index)
+                                                        1, index=csc.index)
 
         print("-----------------------------------------------------------")
         print(f"CSC: {csc.full_name}")
@@ -109,21 +104,6 @@ async def run(opts):
                         print(f"{key} Time:\t{value.private_sndStamp.values[0]}")
                 except (AttributeError, KeyError):
                     print(f"{key} not present")
-            # try:
-            #     asms_df = utils.convert_timestamps(asms_df, ["private_sndStamp"])
-            #     if asms_df.size:
-            #         delta = utils.time_delta(ss_df.private_sndStamp.values[0],
-            #                                  asms_df.private_sndStamp.values[0])
-            #         if math.fabs(delta) > time_window:
-            #             print(f"Large delay in appliedSettingsMatchStart publish: {delta:.1f} seconds")
-            #             print(f"summaryState Time:              {ss_df.private_sndStamp.values[0]}")
-            #             print(f"appliedSettingsMatchStart Time: {asms_df.private_sndStamp.values[0]}")
-            #         asmsit = asms_df.appliedSettingsMatchStartIsTrue.values[0]
-            #         print(f"Applied Settings Match Start Is True: {asmsit}")
-            #     else:
-            #         print("appliedSettingsMatchStart event not present")
-            # except (AttributeError, KeyError):
-            #     print("appliedSettingsMatchStart event not present")
 
 
 def main():
