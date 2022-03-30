@@ -54,16 +54,22 @@ async def run(opts):
         else:
             sc_df = None
 
-        measurements = await efd.get_topics()
-        csc_ca_list = utils.filter_measurements(measurements, csc.name,
-                                                csc.efd_topic("configurationApplied"))
-        csc_ca = [x for x in csc_ca_list if x != "logevent_configurationApplied"]
-
+        # measurements = await efd.get_topics()
+        # csc_ca_list = utils.filter_measurements(measurements, csc.name,
+        #                                         csc.efd_topic("configurationApplied"))
+        # csc_ca = [x for x in csc_ca_list if x != "logevent_configurationApplied"]
+        # print("A:", csc_ca)
         csc_ca_dict = {}
-        for event in csc_ca:
-            csc_ca_dict[event] = await efd.select_top_n(csc.efd_topic(event),
-                                                        "*",
-                                                        1, index=csc.index)
+        try:
+            csc_ca_other_info = ca_df.otherInfo.values[0].split(',')
+            if csc_ca_other_info[0] != '':
+                for event in csc_ca_other_info:
+                    event = event.strip()
+                    csc_ca_dict[event] = await efd.select_top_n(csc.efd_topic(f"logevent_{event}"),
+                                                                "*",
+                                                                1, index=csc.index)
+        except AttributeError:
+            pass
 
         print("-----------------------------------------------------------")
         print(f"CSC: {csc.full_name}")
@@ -86,11 +92,14 @@ async def run(opts):
                         print(f"Large delay in configurationApplied publish: {delta:.1f} seconds")
                         print(f"summaryState Time:    {ss_df.private_sndStamp.values[0]}")
                         print(f"configurationApplied Time: {ca_df.private_sndStamp.values[0]}")
+                    utils.check_not_empty(ca_df.configurations.values[0], "configurations")
+                    utils.check_semver_like(ca_df.version.values[0], "version")
+                    utils.check_not_empty(ca_df.url.values[0], "url")
                 else:
                     print("configurationApplied event not present")
             except (AttributeError, KeyError):
                 print("configurationApplied event not present")
-            print(f"Number of CSC specific configurationApplied events: {len(csc_ca)}")
+            print(f"Number of otherInfo events: {len(csc_ca_dict)}")
             for key, value in csc_ca_dict.items():
                 try:
                     if value.shape[0] == 1:
