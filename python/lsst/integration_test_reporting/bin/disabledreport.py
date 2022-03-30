@@ -54,11 +54,6 @@ async def run(opts):
         else:
             sc_df = None
 
-        # measurements = await efd.get_topics()
-        # csc_ca_list = utils.filter_measurements(measurements, csc.name,
-        #                                         csc.efd_topic("configurationApplied"))
-        # csc_ca = [x for x in csc_ca_list if x != "logevent_configurationApplied"]
-        # print("A:", csc_ca)
         csc_ca_dict = {}
         try:
             csc_ca_other_info = ca_df.otherInfo.values[0].split(',')
