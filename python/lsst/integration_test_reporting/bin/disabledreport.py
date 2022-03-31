@@ -102,10 +102,12 @@ async def run(opts):
                         value = utils.convert_timestamps(value, ["private_sndStamp"])
                         delta = utils.time_delta(ss_df.private_sndStamp.values[0],
                                                  value.private_sndStamp.values[0])
-                    if math.fabs(delta) > time_window:
-                        print(f"Large delay in {key} publish: {delta:.1f} seconds")
-                        print(f"summaryState Time:\t{ss_df.private_sndStamp.values[0]}")
-                        print(f"{key} Time:\t{value.private_sndStamp.values[0]}")
+                        if math.fabs(delta) > time_window:
+                            print(f"Large delay in {key} publish: {delta:.1f} seconds")
+                            print(f"summaryState Time:\t{ss_df.private_sndStamp.values[0]}")
+                            print(f"{key} Time:\t{value.private_sndStamp.values[0]}")
+                    else:
+                        print(f"{key} not present")
                 except (AttributeError, KeyError):
                     print(f"{key} not present")
 
