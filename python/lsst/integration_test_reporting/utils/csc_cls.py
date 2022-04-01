@@ -60,6 +60,8 @@ class CSC:
     @classmethod
     def get_from_list(cls, csc_list):
         csc_entries = csc_list.split(",")
+        if csc_entries[-1] == "":
+            csc_entries.pop()
         cscs = []
         for csc_entry in csc_entries:
             cscs.append(CSC.from_entry(csc_entry))
