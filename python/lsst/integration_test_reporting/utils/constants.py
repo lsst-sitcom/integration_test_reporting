@@ -19,6 +19,7 @@ NON_CONFIG_CSCS = [
     "CCOODS",
     "DSM",
     "LinearStage",
+    "MTAirCompressor",
     "MTPtg",
     "ScriptQueue",
 ]
